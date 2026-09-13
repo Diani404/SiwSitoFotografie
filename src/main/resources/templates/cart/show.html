@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="it">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>Mario Fotografo - Carrello</title>
+	<link rel="stylesheet" th:href="@{/css/stile.css}" />
+</head>
+<body>
+	<div th:replace="~{fragments/header :: header}"></div>
+	<main class="contenitore">
+		<span class="sopratitolo">Ordine</span>
+		<h1 class="titolo-forte">Il tuo carrello</h1>
+		<p class="messaggio-errore" th:if="${errorMessage}" th:text="${errorMessage}">errore</p>
+
+		<div class="blocco" th:if="${events.isEmpty()}">
+			<p>Il carrello e' vuoto.</p>
+			<a class="bottone" href="/events">Scegli un pacchetto</a>
+		</div>
+
+		<div th:unless="${events.isEmpty()}">
+			<div class="blocco">
+				<table class="lista">
+					<thead>
+						<tr><th></th><th>Pacchetto</th><th>Data</th><th>Prezzo</th><th></th></tr>
+					</thead>
+					<tbody>
+						<tr th:each="event : ${events}">
+							<td><img class="mini" alt="" th:src="${event.cover != null} ? ${event.cover.imageUrl} : @{/images/foto-placeholder.jpg}" /></td>
+							<td>
+								<a th:href="@{'/events/' + ${event.id}}" th:text="${event.title}">evento</a><br />
+								<span class="testo-tenue" th:text="#{${'type.' + event.type}} + ' · ' + ${event.location}">tipo</span>
+							</td>
+							<td th:text="${#temporals.format(event.date, 'dd/MM/yyyy')}">data</td>
+							<td th:text="${#numbers.formatDecimal(event.price, 1, 2)} + ' €'">prezzo</td>
+							<td>
+								<form th:action="@{'/cart/remove/' + ${event.id}}" method="POST">
+									<button type="submit" class="bottone-secondario bottone-piccolo">Togli</button>
+								</form>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+
+			<div class="blocco blocco-scuro">
+				<span class="sopratitolo">Totale</span>
+				<span class="prezzo-grande" th:text="${#numbers.formatDecimal(total, 1, 2)} + ' €'">0</span>
+				<p class="testo-tenue">Dopo la conferma preparo le foto e ti contatto per la consegna e il pagamento.</p>
+				<div class="azioni">
+					<form th:action="@{/cart/checkout}" method="POST">
+						<button class="bottone-grande" type="submit">Conferma l'ordine</button>
+					</form>
+					<a class="bottone bottone-secondario" href="/events">Continua a guardare</a>
+				</div>
+			</div>
+		</div>
+	</main>
+	<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="it">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title th:text="'Mario Fotografo - ' + ${photo.title}">Foto</title>
+	<link rel="stylesheet" th:href="@{/css/stile.css}" />
+</head>
+<body>
+	<div th:replace="~{fragments/header :: header}"></div>
+	<main class="contenitore">
+		<p class="testo-tenue">
+			<a href="/events">Eventi</a> /
+			<a th:href="@{'/events/' + ${photo.event.id}}" th:text="${photo.event.title}">evento</a>
+		</p>
+		<h1 class="titolo-forte" th:text="${photo.title}">Titolo</h1>
+
+		<div class="due-colonne">
+			<img class="foto-grande" th:src="${photo.imageUrl}" th:alt="${photo.title}" />
+			<div class="blocco">
+				<p th:if="${photo.description}" th:text="${photo.description}">descrizione</p>
+				<p class="testo-tenue" th:unless="${photo.description}">Nessuna descrizione.</p>
+				<p class="testo-tenue">Questa foto fa parte del pacchetto completo dell'evento:
+					non si vende da sola.</p>
+				<div class="azioni">
+					<a class="bottone" th:href="@{'/events/' + ${photo.event.id}}">Vedi il pacchetto</a>
+					<a class="bottone bottone-secondario" th:href="@{'/events/' + ${photo.event.id} + '/gallery'}">Galleria</a>
+				</div>
+				<div class="azioni" th:if="${isAdmin}">
+					<a class="bottone bottone-secondario bottone-piccolo" th:href="@{'/admin/photos/' + ${photo.id} + '/edit'}">Modifica foto</a>
+				</div>
+			</div>
+		</div>
+	</main>
+	<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

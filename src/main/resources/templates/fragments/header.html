@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<body>
+	<div th:fragment="header" class="intestazione">
+		<div class="intestazione-riga">
+			<a class="logo" href="/">Mario <em>Fotografo</em></a>
+			<nav class="navigazione">
+				<a href="/events">Eventi</a>
+				<a th:if="${userDetails}" href="/cart">Carrello<span class="carrello-badge" th:if="${cartCount > 0}" th:text="${cartCount}">0</span></a>
+				<a th:if="${userDetails}" href="/purchases">I miei ordini</a>
+				<a th:if="${isAdmin}" href="/admin/index">Amministrazione</a>
+				<span th:if="${userDetails}" class="utente-corrente" th:text="'ciao, ' + ${userDetails.username}">utente</span>
+				<form th:if="${userDetails}" th:action="@{/logout}" method="POST">
+					<button type="submit" class="bottone-secondario bottone-piccolo">Logout</button>
+				</form>
+				<a th:unless="${userDetails}" href="/login">Login</a>
+				<a th:unless="${userDetails}" href="/register">Registrati</a>
+			</nav>
+		</div>
+	</div>
+</body>
+</html>

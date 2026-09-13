@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="it">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title th:text="'Mario Fotografo - Galleria ' + ${event.title}">Galleria</title>
+	<link rel="stylesheet" th:href="@{/css/stile.css}" />
+	<link rel="stylesheet" th:href="@{/react/gallery.css}" />
+</head>
+<body>
+	<div th:replace="~{fragments/header :: header}"></div>
+	<main class="contenitore">
+		<span class="sopratitolo" th:text="#{${'type.' + event.type}}">tipo</span>
+		<h1 class="titolo-forte" th:text="${event.title}">Evento</h1>
+		<p class="testo-tenue">
+			<a th:href="@{'/events/' + ${event.id}}">Torna alla pagina dell'evento</a> (versione senza JavaScript)
+		</p>
+
+		<!-- react legge id e chiama le api -->
+		<div id="root" th:attr="data-event-id=${event.id}"></div>
+		<noscript>
+			<p>Questa pagina richiede JavaScript.</p>
+		</noscript>
+	</main>
+	<div th:replace="~{fragments/footer :: footer}"></div>
+	<script type="module" src="/react/gallery.js"></script>
+</body>
+</html>

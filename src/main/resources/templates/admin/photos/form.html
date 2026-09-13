@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="it">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>Mario Fotografo - Modifica foto</title>
+	<link rel="stylesheet" th:href="@{/css/stile.css}" />
+</head>
+<body>
+	<div th:replace="~{fragments/header :: header}"></div>
+	<main class="contenitore">
+		<p class="testo-tenue">
+			<a th:href="@{'/admin/events/' + ${event.id} + '/photos'}" th:text="'Foto di ' + ${event.title}">evento</a>
+		</p>
+		<span class="sopratitolo">Amministrazione</span>
+		<h1 class="titolo-forte">Modifica foto</h1>
+
+		<div class="due-colonne">
+			<img class="foto-grande" th:src="${photo.imageUrl}" th:alt="${photo.title}" />
+			<div class="blocco">
+				<form class="modulo" th:action="@{'/admin/photos/' + ${photo.id}}" method="POST" th:object="${photo}">
+					<div class="campo">
+						<label>Titolo</label>
+						<input type="text" th:field="*{title}" />
+						<span class="error" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></span>
+					</div>
+					<div class="campo">
+						<label>Descrizione</label>
+						<textarea th:field="*{description}"></textarea>
+						<span class="error" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></span>
+					</div>
+					<div class="azioni">
+						<button type="submit">Salva</button>
+						<a class="bottone bottone-secondario" th:href="@{'/admin/events/' + ${event.id} + '/photos'}">Annulla</a>
+					</div>
+				</form>
+			</div>
+		</div>
+	</main>
+	<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

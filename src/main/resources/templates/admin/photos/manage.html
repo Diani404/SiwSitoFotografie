@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="it">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title th:text="'Mario Fotografo - Foto di ' + ${event.title}">Foto</title>
+	<link rel="stylesheet" th:href="@{/css/stile.css}" />
+</head>
+<body>
+	<div th:replace="~{fragments/header :: header}"></div>
+	<main class="contenitore">
+		<p class="testo-tenue">
+			<a href="/admin/events">Gestione eventi</a> /
+			<a th:href="@{'/events/' + ${event.id}}" th:text="${event.title}">evento</a>
+		</p>
+		<span class="sopratitolo">Amministrazione</span>
+		<h1 class="titolo-forte">Foto dell'evento</h1>
+		<p class="messaggio-errore" th:if="${errorMessage}" th:text="${errorMessage}">errore</p>
+
+		<div class="due-colonne">
+			<div class="blocco">
+				<h2>Foto caricate</h2>
+				<p class="testo-tenue">La copertina e' l'unica foto visibile a chi non e' registrato.
+					Tutte le foto fanno parte del pacchetto completo dell'evento.</p>
+				<div th:if="${photos.isEmpty()}">Ancora nessuna foto: caricane una con il modulo a fianco.</div>
+				<table class="lista" th:unless="${photos.isEmpty()}">
+					<thead>
+						<tr><th></th><th>Titolo</th><th>Copertina</th><th></th></tr>
+					</thead>
+					<tbody>
+						<tr th:each="p : ${photos}">
+							<td><img class="mini" th:src="${p.imageUrl}" alt="" /></td>
+							<td><a th:href="@{'/photos/' + ${p.id}}" th:text="${p.title}">foto</a></td>
+							<td>
+								<span class="etichetta" th:if="${event.cover != null and event.cover.id == p.id}">Copertina</span>
+								<form th:unless="${event.cover != null and event.cover.id == p.id}" th:action="@{'/admin/events/' + ${event.id} + '/cover'}" method="POST">
+									<input type="hidden" name="photoId" th:value="${p.id}" />
+									<button type="submit" class="bottone-secondario bottone-piccolo">Imposta</button>
+								</form>
+							</td>
+							<td class="azioni" style="margin: 0;">
+								<a class="bottone bottone-secondario bottone-piccolo" th:href="@{'/admin/photos/' + ${p.id} + '/edit'}">Modifica</a>
+								<form th:action="@{'/admin/photos/' + ${p.id} + '/delete'}" method="POST"
+									onsubmit="return confirm('Eliminare questa foto?');">
+									<button type="submit" class="bottone-pericolo bottone-piccolo">Elimina</button>
+								</form>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+
+			<div class="blocco">
+				<h2>Carica una foto</h2>
+				<form class="modulo" th:action="@{'/admin/events/' + ${event.id} + '/photos'}" method="POST"
+					enctype="multipart/form-data" th:object="${photo}">
+					<div class="error" th:if="${#fields.hasGlobalErrors()}">
+						<p th:each="err : ${#fields.globalErrors()}" th:text="${err}">errore</p>
+					</div>
+					<div class="campo">
+						<label>File immagine</label>
+						<input type="file" name="file" accept="image/*" />
+					</div>
+					<div class="campo">
+						<label>Titolo</label>
+						<input type="text" th:field="*{title}" />
+						<span class="error" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></span>
+					</div>
+					<div class="campo">
+						<label>Descrizione</label>
+						<textarea th:field="*{description}"></textarea>
+						<span class="error" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></span>
+					</div>
+					<div class="campo">
+						<button type="submit">Carica</button>
+					</div>
+				</form>
+			</div>
+		</div>
+	</main>
+	<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

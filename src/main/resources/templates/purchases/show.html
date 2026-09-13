@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="it">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title th:text="'Mario Fotografo - Ordine #' + ${purchase.id}">Ordine</title>
+	<link rel="stylesheet" th:href="@{/css/stile.css}" />
+</head>
+<body>
+	<div th:replace="~{fragments/header :: header}"></div>
+	<main class="contenitore">
+		<span class="sopratitolo">Ordine</span>
+		<h1 class="titolo-forte" th:text="'#' + ${purchase.id}">Ordine</h1>
+		<p class="messaggio-errore" th:if="${errorMessage}" th:text="${errorMessage}">errore</p>
+
+		<div class="blocco">
+			<p>
+				<strong>Data:</strong> <span th:text="${#temporals.format(purchase.date, 'dd/MM/yyyy HH:mm')}">data</span><br />
+				<strong>Cliente:</strong> <span th:text="${purchase.user.fullName}">cliente</span>
+				(<span th:text="${purchase.user.email}">email</span>)<br />
+				<strong>Stato:</strong>
+				<span class="stato" th:classappend="'stato-' + ${#strings.toLowerCase(purchase.status)}" th:text="#{${'status.' + purchase.status}}">stato</span>
+			</p>
+			<table class="lista">
+				<thead>
+					<tr><th></th><th>Pacchetto</th><th>Data evento</th><th>Prezzo</th></tr>
+				</thead>
+				<tbody>
+					<tr th:each="event : ${purchase.events}">
+						<td><img class="mini" alt="" th:src="${event.cover != null} ? ${event.cover.imageUrl} : @{/images/foto-placeholder.jpg}" /></td>
+						<td>
+							<a th:href="@{'/events/' + ${event.id}}" th:text="${event.title}">evento</a><br />
+							<span class="testo-tenue" th:text="#{${'type.' + event.type}}">tipo</span>
+						</td>
+						<td th:text="${#temporals.format(event.date, 'dd/MM/yyyy')}">data</td>
+						<td th:text="${#numbers.formatDecimal(event.price, 1, 2)} + ' €'">prezzo</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+
+		<div class="blocco blocco-scuro">
+			<span class="sopratitolo">Totale</span>
+			<span class="prezzo-grande" th:text="${#numbers.formatDecimal(purchase.total, 1, 2)} + ' €'">0</span>
+
+			<div class="azioni">
+				<a class="bottone bottone-secondario" th:unless="${isAdmin}" href="/purchases">I miei ordini</a>
+				<form th:if="${purchase.pending and !isAdmin}" th:action="@{'/purchases/' + ${purchase.id} + '/cancel'}" method="POST"
+					onsubmit="return confirm('Annullare questo ordine?');">
+					<button type="submit" class="bottone-secondario">Annulla ordine</button>
+				</form>
+			</div>
+
+			<div th:if="${isAdmin}">
+				<h3>Aggiorna stato</h3>
+				<form class="azioni" th:action="@{'/admin/purchases/' + ${purchase.id} + '/status'}" method="POST">
+					<select name="status" style="width: auto; padding: 0.4em;">
+						<option th:each="s : ${statuses}" th:value="${s}" th:selected="${s == purchase.status}" th:text="#{${'status.' + s}}">stato</option>
+					</select>
+					<button type="submit" class="bottone-piccolo">Salva</button>
+					<a class="bottone bottone-secondario bottone-piccolo" href="/admin/purchases">Tutti gli ordini</a>
+				</form>
+			</div>
+		</div>
+	</main>
+	<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

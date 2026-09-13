@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="it">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>Mario Fotografo - Ordini</title>
+	<link rel="stylesheet" th:href="@{/css/stile.css}" />
+</head>
+<body>
+	<div th:replace="~{fragments/header :: header}"></div>
+	<main class="contenitore">
+		<span class="sopratitolo">Amministrazione</span>
+		<h1 class="titolo-forte">Ordini ricevuti</h1>
+		<div class="blocco" th:if="${purchases.isEmpty()}">Nessun ordine.</div>
+		<div class="blocco" th:unless="${purchases.isEmpty()}">
+			<table class="lista">
+				<thead>
+					<tr><th>Numero</th><th>Data</th><th>Cliente</th><th>Pacchetti</th><th>Totale</th><th>Stato</th></tr>
+				</thead>
+				<tbody>
+					<tr th:each="p : ${purchases}">
+						<td><a th:href="@{'/purchases/' + ${p.id}}" th:text="'#' + ${p.id}">n</a></td>
+						<td th:text="${#temporals.format(p.date, 'dd/MM/yyyy HH:mm')}">data</td>
+						<td th:text="${p.user.fullName}">cliente</td>
+						<td th:text="${p.events.size()}">0</td>
+						<td th:text="${#numbers.formatDecimal(p.total, 1, 2)} + ' €'">totale</td>
+						<td><span class="stato" th:classappend="'stato-' + ${#strings.toLowerCase(p.status)}" th:text="#{${'status.' + p.status}}">stato</span></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</main>
+	<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

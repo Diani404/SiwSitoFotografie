@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="it">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>Mario Fotografo - Eventi</title>
+	<link rel="stylesheet" th:href="@{/css/stile.css}" />
+</head>
+<body>
+	<div th:replace="~{fragments/header :: header}"></div>
+	<main class="contenitore">
+		<span class="sopratitolo">Il mio lavoro</span>
+		<h1 class="titolo-forte">Eventi</h1>
+		<p th:unless="${userDetails}">Di ogni evento qui si vede una sola foto:
+			<a href="/register">registrati</a> per sfogliare tutta la galleria.</p>
+
+		<div class="filtri">
+			<a th:href="@{/events}" th:classappend="${selectedType == null} ? 'attivo'">Tutti</a>
+			<a th:each="t : ${types}" th:href="@{/events(type=${t})}" th:classappend="${t == selectedType} ? 'attivo'" th:text="#{${'type.' + t}}">tipo</a>
+		</div>
+
+		<div class="blocco" th:if="${events.isEmpty()}">Nessun evento di questo tipo.</div>
+		<div class="griglia">
+			<a class="scheda" th:each="event : ${events}" th:href="@{'/events/' + ${event.id}}">
+				<img alt="copertina" th:src="${event.cover != null} ? ${event.cover.imageUrl} : @{/images/foto-placeholder.jpg}" />
+				<div class="scheda-testo">
+					<span class="etichetta" th:text="#{${'type.' + event.type}}">tipo</span>
+					<h3 th:text="${event.title}">evento</h3>
+					<p class="testo-tenue">
+						<span th:text="${event.location}">luogo</span> &middot;
+						<span th:text="${#temporals.format(event.date, 'dd/MM/yyyy')}">data</span>
+					</p>
+					<p th:text="${#strings.abbreviate(event.description, 110)}">descrizione</p>
+					<div class="scheda-riga">
+						<span class="testo-tenue">Pacchetto completo</span>
+						<span class="prezzo" th:text="${#numbers.formatDecimal(event.price, 1, 2)} + ' €'">prezzo</span>
+					</div>
+				</div>
+			</a>
+		</div>
+	</main>
+	<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

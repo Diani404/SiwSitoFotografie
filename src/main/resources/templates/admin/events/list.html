@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="it">
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>Mario Fotografo - Gestione eventi</title>
+	<link rel="stylesheet" th:href="@{/css/stile.css}" />
+</head>
+<body>
+	<div th:replace="~{fragments/header :: header}"></div>
+	<main class="contenitore">
+		<span class="sopratitolo">Amministrazione</span>
+		<h1 class="titolo-forte">Gestione eventi</h1>
+		<p class="messaggio-errore" th:if="${errorMessage}" th:text="${errorMessage}">errore</p>
+		<div class="azioni" style="margin-bottom: 1.8em;">
+			<a class="bottone" href="/admin/events/new">Nuovo evento</a>
+			<a class="bottone bottone-secondario" href="/admin/index">Amministrazione</a>
+		</div>
+
+		<div class="blocco" th:if="${events.isEmpty()}">Nessun evento.</div>
+		<div class="blocco" th:unless="${events.isEmpty()}">
+			<table class="lista">
+				<thead>
+					<tr><th></th><th>Evento</th><th>Tipo</th><th>Data</th><th>Pacchetto</th><th></th></tr>
+				</thead>
+				<tbody>
+					<tr th:each="event : ${events}">
+						<td><img class="mini" alt="" th:src="${event.cover != null} ? ${event.cover.imageUrl} : @{/images/foto-placeholder.jpg}" /></td>
+						<td>
+							<a th:href="@{'/events/' + ${event.id}}" th:text="${event.title}">evento</a><br />
+							<span class="testo-tenue" th:text="${event.location}">luogo</span>
+						</td>
+						<td th:text="#{${'type.' + event.type}}">tipo</td>
+						<td th:text="${#temporals.format(event.date, 'dd/MM/yyyy')}">data</td>
+						<td th:text="${#numbers.formatDecimal(event.price, 1, 2)} + ' €'">prezzo</td>
+						<td class="azioni" style="margin: 0;">
+							<a class="bottone bottone-secondario bottone-piccolo" th:href="@{'/admin/events/' + ${event.id} + '/photos'}">Foto</a>
+							<a class="bottone bottone-secondario bottone-piccolo" th:href="@{'/admin/events/' + ${event.id} + '/edit'}">Modifica</a>
+							<form th:action="@{'/admin/events/' + ${event.id} + '/delete'}" method="POST"
+								onsubmit="return confirm('Eliminare l\'evento e tutte le sue foto?');">
+								<button type="submit" class="bottone-pericolo bottone-piccolo">Elimina</button>
+							</form>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</main>
+	<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>
